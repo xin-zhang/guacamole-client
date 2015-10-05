@@ -58,7 +58,8 @@ Guacamole.AudioPlayer = function AudioPlayer() {
  */
 Guacamole.AudioPlayer.isSupportedType = function isSupportedType(mimetype) {
 
-    return Guacamole.RawAudioPlayer.isSupportedType(mimetype);
+    return Guacamole.MediaSourceAudioPlayer.isSupportedType(mimetype)
+        || Guacamole.RawAudioPlayer.isSupportedType(mimetype);
 
 };
 
@@ -77,7 +78,17 @@ Guacamole.AudioPlayer.isSupportedType = function isSupportedType(mimetype) {
  */
 Guacamole.AudioPlayer.getSupportedTypes = function getSupportedTypes() {
 
-    return Guacamole.RawAudioPlayer.getSupportedTypes();
+    var supportedTypes = [];
+
+    // Add types supported by Guacamole.MediaSourceAudioPlayer
+    Array.prototype.push.apply(supportedTypes,
+        Guacamole.MediaSourceAudioPlayer.getSupportedTypes());
+
+    // Add types supported by Guacamole.RawAudioPlayer
+    Array.prototype.push.apply(supportedTypes,
+        Guacamole.RawAudioPlayer.getSupportedTypes());
+
+    return supportedTypes;
 
 };
 
@@ -99,7 +110,11 @@ Guacamole.AudioPlayer.getSupportedTypes = function getSupportedTypes() {
  */
 Guacamole.AudioPlayer.getInstance = function getInstance(stream, mimetype) {
 
-    // Use raw audio player if possible
+    // Use Media Source Extensions if possible
+    if (Guacamole.MediaSourceAudioPlayer.isSupportedType(mimetype))
+        return new Guacamole.MediaSourceAudioPlayer(stream, mimetype);
+
+    // If Media Source Extensions cannot be used, try raw audio player
     if (Guacamole.RawAudioPlayer.isSupportedType(mimetype))
         return new Guacamole.RawAudioPlayer(stream, mimetype);
 
@@ -648,5 +663,101 @@ Guacamole.RawAudioPlayer.getSupportedTypes = function getSupportedTypes() {
         'audio/L8',
         'audio/L16'
     ];
+
+};
+
+/**
+ * Implementation of Guacamole.AudioPlayer providing support for arbitrary
+ * format audio via Media Source Extensions. This player relies on browser-
+ * level support for its audio formats.
+ *
+ * @constructor
+ * @augments Guacamole.AudioPlayer
+ * @param {Guacamole.InputStream} stream
+ *     The Guacamole.InputStream to read audio data from.
+ *
+ * @param {String} mimetype
+ *     The mimetype of the audio data in the provided stream.
+ */
+Guacamole.MediaSourceAudioPlayer = function MediaSourceAudioPlayer(stream, mimetype) {
+
+    /**
+     * Guacamole.ArrayBufferReader wrapped around the audio input stream
+     * provided with this Guacamole.MediaSourceAudioPlayer was created.
+     *
+     * @private
+     * @type Guacamole.ArrayBufferReader
+     */
+    var reader = new Guacamole.ArrayBufferReader(stream);
+
+    // Handle each received audio packet
+    reader.ondata = function playReceivedAudio(data) {
+
+        /* STUB */
+        console.log('STUB - Received %i bytes.', data.byteLength);
+
+    };
+
+};
+
+Guacamole.MediaSourceAudioPlayer.prototype = new Guacamole.AudioPlayer();
+
+/**
+ * Determines whether the given mimetype is supported by
+ * Guacamole.MediaSourceAudioPlayer.
+ *
+ * @param {String} mimetype
+ *     The mimetype to check.
+ *
+ * @returns {Boolean}
+ *     true if the given mimetype is supported by
+ *     Guacamole.MediaSourceAudioPlayer, false otherwise.
+ */
+Guacamole.MediaSourceAudioPlayer.isSupportedType = function isSupportedType(mimetype) {
+
+    // No supported types if Media Source Extensions are not available
+    if (!window.MediaSource)
+        return false;
+
+    return MediaSource.isTypeSupported(mimetype);
+
+};
+
+/**
+ * Returns a list of all mimetypes supported by
+ * Guacamole.MediaSourceAudioPlayer.
+ *
+ * @returns {String[]}
+ *     A list of all mimetypes supported by Guacamole.MediaSourceAudioPlayer.
+ *     If the necessary JavaScript APIs for playing audio using MediaSource are
+ *     absent, this list will be empty.
+ */
+Guacamole.MediaSourceAudioPlayer.getSupportedTypes = function getSupportedTypes() {
+
+    var supportedTypes = [];
+
+    // Check each of several known audio formats
+    [
+        'audio/ogg; codecs="vorbis"',
+        'audio/mp4; codecs="mp4a.40.5"',
+        'audio/mpeg; codecs="mp3"',
+        'audio/webm; codecs="vorbis"'
+    ].forEach(function checkType(mimetype) {
+
+        // Add mimetype if supported
+        if (Guacamole.MediaSourceAudioPlayer.isSupportedType(mimetype)) {
+
+            // Trim semicolon and any parameters if present
+            var semicolon = mimetype.indexOf(";");
+            if (semicolon !== -1)
+                mimetype = mimetype.substring(0, semicolon);
+
+            supportedTypes.push(mimetype);
+
+        }
+
+    });
+
+    return supportedTypes;
 
 };
