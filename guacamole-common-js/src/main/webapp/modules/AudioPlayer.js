@@ -690,12 +690,83 @@ Guacamole.MediaSourceAudioPlayer = function MediaSourceAudioPlayer(stream, mimet
      */
     var reader = new Guacamole.ArrayBufferReader(stream);
 
-    // Handle each received audio packet
+    /**
+     * The audio element through which streamed audio will be played.
+     *
+     * @private
+     * @type HTMLAudioElement
+     */
+    var audio = document.createElement('audio');
+
+    /**
+     * The MediaSource which will be associated with the audio element to
+     * facilitate streaming of audio via individual chunks.
+     *
+     * @private
+     * @type MediaSource
+     */
+    var mediaSource = new MediaSource();
+
+    /**
+     * The source buffer to which received audio packets should be added.
+     *
+     * @private
+     * @type SourceBuffer
+     */
+    var sourceBuffer = null;
+
+    /**
+     * The queue of all pending audio packets. Audio packets which are pending
+     * playback will be added to this queue while the MediaSource and
+     * SourceBuffer become ready for additional data.
+     *
+     * @private
+     * @type ArrayBuffer[]
+     */
+    var packetQueue = [];
+
+    /**
+     * Checks the state of the SourceBuffer and packet queue, feeding
+     * additional data into the SourceBuffer from the packet queue if both are
+     * ready.
+     */
+    var continuePlayback = function continuePlayback() {
+
+        // Cannot play audio if the buffer is not ready
+        if (!sourceBuffer || sourceBuffer.updating)
+            return;
+
+        // Shift next packet onto media source buffer
+        var packet = packetQueue.shift();
+        if (packet)
+            sourceBuffer.appendBuffer(packet);
+
+    };
+
+    // Begin playback from media source
+    audio.src = window.URL.createObjectURL(mediaSource);
+
+    // Create source buffer when possible
+    mediaSource.addEventListener('sourceopen', function mediaSourceOpen() {
+
+        // Create source buffer now that media source is ready
+        sourceBuffer = mediaSource.addSourceBuffer(mimetype);
+        sourceBuffer.addEventListener('updateend', continuePlayback);
+
+        // Begin playback of audio
+        continuePlayback();
+        audio.play();
+
+    });
+
+    // Play each received audio packet when possible
     reader.ondata = function playReceivedAudio(data) {
+        packetQueue.push(data);
+        continuePlayback();
+    };
 
-        /* STUB */
-        console.log('STUB - Received %i bytes.', data.byteLength);
-
+    this.sync = function sync() {
+        /* FIXME: Implement */
     };
 
 };
@@ -738,9 +809,11 @@ Guacamole.MediaSourceAudioPlayer.getSupportedTypes = function getSupportedTypes(
 
     // Check each of several known audio formats
     [
+        'audio/vorbis',
         'audio/ogg; codecs="vorbis"',
+        'audio/aac',
         'audio/mp4; codecs="mp4a.40.5"',
-        'audio/mpeg; codecs="mp3"',
+        'audio/mpeg',
         'audio/webm; codecs="vorbis"'
     ].forEach(function checkType(mimetype) {
 
