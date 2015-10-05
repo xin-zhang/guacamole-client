@@ -766,7 +766,16 @@ Guacamole.MediaSourceAudioPlayer = function MediaSourceAudioPlayer(stream, mimet
     };
 
     this.sync = function sync() {
+
         /* FIXME: Implement */
+
+        var buffered = audio.buffered;
+        if (buffered.length) {
+            var endTime = buffered.end(buffered.length - 1);
+            console.log("Buffer size (seconds): %f",
+                endTime - audio.currentTime);
+        }
+
     };
 
 };
