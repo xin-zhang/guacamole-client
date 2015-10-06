@@ -129,7 +129,7 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
 
     // Display login screen if a whole new set of credentials is needed
     $scope.$on('guacInvalidCredentials', function loginInvalid(event, parameters, error) {
-        $scope.page.title = 'APP.NAME';
+        $scope.page.title = 'LOGIN.TITLE';
         $scope.page.bodyClassName = '';
         $scope.loginHelpText = null;
         $scope.acceptedCredentials = {};
@@ -138,7 +138,7 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
 
     // Prompt for remaining credentials if provided credentials were not enough
     $scope.$on('guacInsufficientCredentials', function loginInsufficient(event, parameters, error) {
-        $scope.page.title = 'APP.NAME';
+        $scope.page.title = 'LOGIN.TITLE';
         $scope.page.bodyClassName = '';
         $scope.loginHelpText = error.message;
         $scope.acceptedCredentials = parameters;

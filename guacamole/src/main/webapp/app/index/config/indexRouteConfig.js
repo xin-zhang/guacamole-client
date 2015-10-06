@@ -115,7 +115,7 @@ angular.module('index').config(['$routeProvider', '$locationProvider',
 
         // Home screen
         .when('/', {
-            title         : 'APP.NAME',
+            title         : 'HOME.TITLE',
             bodyClassName : 'home',
             templateUrl   : 'app/home/templates/home.html',
             controller    : 'homeController',
@@ -124,7 +124,7 @@ angular.module('index').config(['$routeProvider', '$locationProvider',
 
         // Management screen
         .when('/settings/:dataSource?/:tab', {
-            title         : 'APP.NAME',
+            title         : 'SETTINGS.TITLE',
             bodyClassName : 'settings',
             templateUrl   : 'app/settings/templates/settings.html',
             controller    : 'settingsController',
@@ -133,7 +133,7 @@ angular.module('index').config(['$routeProvider', '$locationProvider',
 
         // Connection editor
         .when('/manage/:dataSource/connections/:id?', {
-            title         : 'APP.NAME',
+            title         : 'MANAGE_CONNECTION.TITLE',
             bodyClassName : 'manage',
             templateUrl   : 'app/manage/templates/manageConnection.html',
             controller    : 'manageConnectionController',
@@ -142,7 +142,7 @@ angular.module('index').config(['$routeProvider', '$locationProvider',
 
         // Connection group editor
         .when('/manage/:dataSource/connectionGroups/:id?', {
-            title         : 'APP.NAME',
+            title         : 'MANAGE_CONNECTION_GROUP.TITLE',
             bodyClassName : 'manage',
             templateUrl   : 'app/manage/templates/manageConnectionGroup.html',
             controller    : 'manageConnectionGroupController',
@@ -151,7 +151,7 @@ angular.module('index').config(['$routeProvider', '$locationProvider',
 
         // User editor
         .when('/manage/:dataSource/users/:id', {
-            title         : 'APP.NAME',
+            title         : 'MANAGE_USER.TITLE',
             bodyClassName : 'manage',
             templateUrl   : 'app/manage/templates/manageUser.html',
             controller    : 'manageUserController',

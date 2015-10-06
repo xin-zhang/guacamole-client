@@ -148,7 +148,9 @@
         "PASSWORD_CHANGED" : "Password changed.",
 
         "SECTION_HEADER_ALL_CONNECTIONS"    : "All Connections",
-        "SECTION_HEADER_RECENT_CONNECTIONS" : "Recent Connections"
+        "SECTION_HEADER_RECENT_CONNECTIONS" : "Recent Connections",
+
+        "TITLE" : "@:APP.NAME"
 
     },
 
@@ -163,7 +165,11 @@
         "ERROR_INVALID_LOGIN" : "Invalid Login",
 
         "FIELD_HEADER_USERNAME" : "Username",
-        "FIELD_HEADER_PASSWORD" : "Password"
+        "FIELD_HEADER_PASSWORD" : "Password",
+
+        "SECTION_HEADER_LOGIN"  : "@:APP.NAME",
+
+        "TITLE" : "@:APP.NAME"
 
     },
 
@@ -197,7 +203,9 @@
         "TABLE_HEADER_HISTORY_DURATION" : "Duration",
 
         "TEXT_CONFIRM_DELETE"   : "Connections cannot be restored after they have been deleted. Are you sure you want to delete this connection?",
-        "TEXT_HISTORY_DURATION" : "{VALUE} {UNIT, select, second{{VALUE, plural, one{second} other{seconds}}} minute{{VALUE, plural, one{minute} other{minutes}}} hour{{VALUE, plural, one{hour} other{hours}}} day{{VALUE, plural, one{day} other{days}}} other{}}"
+        "TEXT_HISTORY_DURATION" : "{VALUE} {UNIT, select, second{{VALUE, plural, one{second} other{seconds}}} minute{{VALUE, plural, one{minute} other{minutes}}} hour{{VALUE, plural, one{hour} other{hours}}} day{{VALUE, plural, one{day} other{days}}} other{}}",
+
+        "TITLE" : "@:APP.NAME"
 
     },
 
@@ -220,7 +228,9 @@
 
         "SECTION_HEADER_EDIT_CONNECTION_GROUP" : "Edit Connection Group",
 
-        "TEXT_CONFIRM_DELETE" : "Connection groups cannot be restored after they have been deleted. Are you sure you want to delete this connection group?"
+        "TEXT_CONFIRM_DELETE" : "Connection groups cannot be restored after they have been deleted. Are you sure you want to delete this connection group?",
+
+        "TITLE" : "@:APP.NAME"
 
     },
 
@@ -251,7 +261,9 @@
         "SECTION_HEADER_EDIT_USER"   : "Edit User",
         "SECTION_HEADER_PERMISSIONS" : "Permissions",
 
-        "TEXT_CONFIRM_DELETE" : "Users cannot be restored after they have been deleted. Are you sure you want to delete this user?"
+        "TEXT_CONFIRM_DELETE" : "Users cannot be restored after they have been deleted. Are you sure you want to delete this user?",
+
+        "TITLE" : "@:APP.NAME"
 
     },
     
@@ -469,7 +481,9 @@
 
     "SETTINGS" : {
 
-        "SECTION_HEADER_SETTINGS" : "Settings"
+        "SECTION_HEADER_SETTINGS" : "Settings",
+
+        "TITLE" : "@:APP.NAME"
 
     },
 
