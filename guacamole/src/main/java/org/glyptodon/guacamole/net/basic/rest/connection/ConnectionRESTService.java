@@ -49,9 +49,9 @@ import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet;
 import org.glyptodon.guacamole.net.basic.GuacamoleSession;
-import org.glyptodon.guacamole.net.basic.rest.AuthProviderRESTExposure;
 import org.glyptodon.guacamole.net.basic.rest.ObjectRetrievalService;
 import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
+import org.glyptodon.guacamole.net.basic.rest.history.APIConnectionRecord;
 import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,7 +105,6 @@ public class ConnectionRESTService {
      */
     @GET
     @Path("/{connectionID}")
-    @AuthProviderRESTExposure
     public APIConnection getConnection(@QueryParam("token") String authToken, 
             @PathParam("dataSource") String authProviderIdentifier,
             @PathParam("connectionID") String connectionID)
@@ -141,7 +140,6 @@ public class ConnectionRESTService {
      */
     @GET
     @Path("/{connectionID}/parameters")
-    @AuthProviderRESTExposure
     public Map<String, String> getConnectionParameters(@QueryParam("token") String authToken, 
             @PathParam("dataSource") String authProviderIdentifier,
             @PathParam("connectionID") String connectionID)
@@ -195,7 +193,6 @@ public class ConnectionRESTService {
      */
     @GET
     @Path("/{connectionID}/history")
-    @AuthProviderRESTExposure
     public List<APIConnectionRecord> getConnectionHistory(@QueryParam("token") String authToken, 
             @PathParam("dataSource") String authProviderIdentifier,
             @PathParam("connectionID") String connectionID)
@@ -235,7 +232,6 @@ public class ConnectionRESTService {
      */
     @DELETE
     @Path("/{connectionID}")
-    @AuthProviderRESTExposure
     public void deleteConnection(@QueryParam("token") String authToken,
             @PathParam("dataSource") String authProviderIdentifier,
             @PathParam("connectionID") String connectionID)
@@ -275,7 +271,6 @@ public class ConnectionRESTService {
      */
     @POST
     @Produces(MediaType.TEXT_PLAIN)
-    @AuthProviderRESTExposure
     public String createConnection(@QueryParam("token") String authToken,
             @PathParam("dataSource") String authProviderIdentifier,
             APIConnection connection) throws GuacamoleException {
@@ -320,7 +315,6 @@ public class ConnectionRESTService {
      */
     @PUT
     @Path("/{connectionID}")
-    @AuthProviderRESTExposure
     public void updateConnection(@QueryParam("token") String authToken, 
             @PathParam("dataSource") String authProviderIdentifier,
             @PathParam("connectionID") String connectionID,

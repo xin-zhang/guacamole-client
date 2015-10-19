@@ -173,6 +173,7 @@ angular.module('navigation').factory('userPageService', ['$injector',
         
         var canManageUsers = [];
         var canManageConnections = [];
+        var canViewConnectionRecords = [];
         var canManageSessions = [];
 
         // Inspect the contents of each provided permission set
@@ -210,8 +211,9 @@ angular.module('navigation').factory('userPageService', ['$injector',
 
                     // Permission to administer users
                     || PermissionSet.hasUserPermission(permissions, PermissionSet.ObjectPermissionType.ADMINISTER)
-            )
+            ) {
                 canManageUsers.push(dataSource);
+            }
 
             // Determine whether the current user needs access to the connection management UI
             if (
@@ -231,15 +233,18 @@ angular.module('navigation').factory('userPageService', ['$injector',
                     // Permission to administer connections or connection groups
                     || PermissionSet.hasConnectionPermission(permissions,      PermissionSet.ObjectPermissionType.ADMINISTER)
                     || PermissionSet.hasConnectionGroupPermission(permissions, PermissionSet.ObjectPermissionType.ADMINISTER)
-            )
+            ) {
                 canManageConnections.push(dataSource);
+            }
 
-            // Determine whether the current user needs access to the session management UI
+            // Determine whether the current user needs access to the session management UI or view connection history
             if (
                     // A user must be a system administrator to manage sessions
                     PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
-            )
+            ) {
                 canManageSessions.push(dataSource);
+                canViewConnectionRecords.push(dataSource);
+            }
 
         });
 
@@ -250,7 +255,18 @@ angular.module('navigation').factory('userPageService', ['$injector',
                 url  : '/settings/sessions'
             }));
         }
-        
+
+        // If user can manage connections, add links for connection management pages
+        angular.forEach(canViewConnectionRecords, function addConnectionHistoryLink(dataSource) {
+            pages.push(new PageDefinition({
+                name : [
+                    'USER_MENU.ACTION_VIEW_HISTORY',
+                    translationStringService.canonicalize('DATA_SOURCE_' + dataSource) + '.NAME'
+                ],
+                url  : '/settings/' + encodeURIComponent(dataSource) + '/history'
+            }));
+        });
+
         // If user can manage users, add link to user management page
         if (canManageUsers.length) {
             pages.push(new PageDefinition({

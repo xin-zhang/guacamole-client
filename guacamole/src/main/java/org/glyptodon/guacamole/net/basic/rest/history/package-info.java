@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,19 +20,9 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.net.basic.rest;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 /**
- * Marks that a method exposes functionality from the Guacamole AuthenticationProvider
- * using a REST interface.
- * 
- * @author James Muehlner
+ * Classes related to retrieval or maintenance of history records using the
+ * Guacamole REST API.
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD})
-public @interface AuthProviderRESTExposure {}
+package org.glyptodon.guacamole.net.basic.rest.history;
+
