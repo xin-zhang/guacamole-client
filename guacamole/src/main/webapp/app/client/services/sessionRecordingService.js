@@ -46,9 +46,9 @@ angular.module('client').factory('sessionRecordingService', ['$injector', functi
      *
      * @private
      * @constructor
-     * @param {ManagedClient} client
-     *     The ManagedClient associated with the Guacamole session that should
-     *     be recorded.
+     * @param {Guacamole.Client} client
+     *     The Guacamole.Client associated with the Guacamole session that
+     *     should be recorded.
      */
     var Recording = function Recording(client) {
 
@@ -80,16 +80,16 @@ angular.module('client').factory('sessionRecordingService', ['$injector', functi
         var lastFrameLocalTimestamp = null;
 
         /**
-         * The ManagedClient associated with the Guacamole session that should
-         * be recorded.
+         * The Guacamole.Client associated with the Guacamole session that
+         * should be recorded.
          *
-         * @type ManagedClient
+         * @type Guacamole.Client
          */
         this.client = client;
 
         /**
          * GIF recording context for recording the Guacamole session of the
-         * specified ManagedClient.
+         * specified Guacamole.Client.
          *
          * @type GIF
          */
@@ -97,7 +97,7 @@ angular.module('client').factory('sessionRecordingService', ['$injector', functi
 
         /**
          * The ID of the interval set via <code>window.setInterval()</code>
-         * which polls the associated ManagedClient for changes to the mouse
+         * which polls the associated Guacamole.Client for changes to the mouse
          * cursor location. If no such interval has been set, this will be
          * null.
          *
@@ -107,11 +107,8 @@ angular.module('client').factory('sessionRecordingService', ['$injector', functi
 
         /**
          * Adds a new frame to the in-progress recording using the contents of
-         * the display of the given Guacamole client.
-         *
-         * @param {Guacamole.Client} guac
-         *     The Guacamole client whose display contents should be added to
-         *     the in-progress recording as a new frame.
+         * the display of the Guacamole client associated with this Recording
+         * object.
          *
          * @param {Number} [timestamp]
          *     The timestamp of the frame being added, in milliseconds. This
@@ -120,7 +117,7 @@ angular.module('client').factory('sessionRecordingService', ['$injector', functi
          *     timestamp will be approximated using the amount of time elapsed
          *     since addFrame() was last called.
          */
-        this.addFrame = function addFrame(guac, timestamp) {
+        this.addFrame = function addFrame(timestamp) {
 
             var localTimestamp = new Date().getTime();
 
@@ -144,7 +141,7 @@ angular.module('client').factory('sessionRecordingService', ['$injector', functi
             }
 
             // Produce full frame of display data
-            var canvas = guac.getDisplay().flatten();
+            var canvas = recording.client.getDisplay().flatten();
 
             // Write frame to GIF
             recording.gif.addFrame(canvas, {
@@ -161,10 +158,10 @@ angular.module('client').factory('sessionRecordingService', ['$injector', functi
 
     /**
      * Begins recording the Guacamole session associated with the given
-     * ManagedClient.
+     * Guacamole.Client.
      *
-     * @param {ManagedClient} client
-     *     The ManagedClient whose associated Guacamole session should be
+     * @param {Guacamole.Client} client
+     *     The Guacamole.Client whose associated Guacamole session should be
      *     recorded.
      *
      * @returns {Recording}
@@ -176,23 +173,20 @@ angular.module('client').factory('sessionRecordingService', ['$injector', functi
 
         var recording = new Recording(client);
 
-        // Pull Guacamole client from ManagedClient
-        var guac = client.client;
-
         // Install sync handler which writes each received Guacamole frame
-        guac.onsync = function writeFrame(timestamp) {
-            recording.addFrame(guac, timestamp);
+        client.onsync = function writeFrame(timestamp) {
+            recording.addFrame(timestamp);
         };
 
         // Pull current mouse location
-        var display = guac.getDisplay();
+        var display = client.getDisplay();
         var x = display.cursorX;
         var y = display.cursorY;
 
         // Render a new frame whenever the mouse cursor moves
         recording.mouseCheckInterval = window.setInterval(function checkMouse() {
             if (x !== display.cursorX || y !== display.cursorY) {
-                recording.addFrame(guac);
+                recording.addFrame();
                 x = display.cursorX;
                 y = display.cursorY;
             }
@@ -220,11 +214,8 @@ angular.module('client').factory('sessionRecordingService', ['$injector', functi
 
         var renderingProcess = $q.defer();
 
-        // Pull Guacamole client from ManagedClient
-        var guac = recording.client.client;
-
         // Stop rendering of further frames to the GIF
-        guac.onsync = null;
+        recording.client.onsync = null;
 
         // Stop polling for changes to the mouse cursor
         window.clearInterval(recording.mouseCheckInterval);
