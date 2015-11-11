@@ -1106,6 +1106,11 @@ Guacamole.Display = function() {
         // Draw default layer and all children
         draw_layer(default_layer, 0, 0);
 
+        // Draw mouse cursor
+        context.drawImage(cursor.getCanvas(),
+            guac_display.cursorX - guac_display.cursorHotspotX,
+            guac_display.cursorY - guac_display.cursorHotspotY);
+
         // Return new canvas copy
         return canvas;
         
