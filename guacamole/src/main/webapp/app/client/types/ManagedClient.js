@@ -36,16 +36,17 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
     var ManagedFileUpload    = $injector.get('ManagedFileUpload');
 
     // Required services
-    var $document              = $injector.get('$document');
-    var $q                     = $injector.get('$q');
-    var $window                = $injector.get('$window');
-    var authenticationService  = $injector.get('authenticationService');
-    var connectionGroupService = $injector.get('connectionGroupService');
-    var connectionService      = $injector.get('connectionService');
-    var guacAudio              = $injector.get('guacAudio');
-    var guacHistory            = $injector.get('guacHistory');
-    var guacImage              = $injector.get('guacImage');
-    var guacVideo              = $injector.get('guacVideo');
+    var $document               = $injector.get('$document');
+    var $q                      = $injector.get('$q');
+    var $window                 = $injector.get('$window');
+    var authenticationService   = $injector.get('authenticationService');
+    var connectionGroupService  = $injector.get('connectionGroupService');
+    var connectionService       = $injector.get('connectionService');
+    var guacAudio               = $injector.get('guacAudio');
+    var guacHistory             = $injector.get('guacHistory');
+    var guacImage               = $injector.get('guacImage');
+    var guacVideo               = $injector.get('guacVideo');
+    var sessionRecordingService = $injector.get('sessionRecordingService');
         
     /**
      * Object which serves as a surrogate interface, encapsulating a Guacamole
@@ -131,6 +132,14 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
          * @type ManagedFilesystem[]
          */
         this.filesystems = template.filesystems || [];
+
+        /**
+         * The currently in-progress session recording for this client, or null
+         * if no recording is in progress.
+         *
+         * @type Recording
+         */
+        this.currentRecording = template.currentRecording || null;
 
         /**
          * The current state of the Guacamole client (idle, connecting,
@@ -488,6 +497,59 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
 
         // Start and manage file upload
         managedClient.uploads.push(ManagedFileUpload.getInstance(managedClient.client, file, object, streamName));
+
+    };
+
+    /**
+     * Begins recording the Guacamole session associated with the given
+     * ManagedClient. Only one recording may be in progress per ManagedClient
+     * at any given time. If a recording is already in progress, this function
+     * has no effect.
+     *
+     * @param {ManagedClient} client
+     *     The ManagedClient whose associated Guacamole session should be
+     *     recorded.
+     */
+    ManagedClient.startRecording = function startRecording(managedClient) {
+
+        // Do nothing if a recording is already in progress
+        if (managedClient.currentRecording)
+            return;
+
+        // Start and store new in-progress recording
+        managedClient.currentRecording =
+                sessionRecordingService.startRecording(managedClient.client);
+
+    };
+
+    /**
+     * Stops the currently in-progress recording associated with the given
+     * ManagedClient, returning a Promise which is eventually resolved with a
+     * Blob containing a GIF of the recorded session. If no recording is
+     * currently in progress, this function has no effect, and null is
+     * returned.
+     *
+     * @param {ManagedClient} client
+     *     The ManagedClient whose in-progress recording should be stopped.
+     *
+     * @returns {Promise.<Blob>}
+     *     A Promise which resolves with a Blob containing the recorded
+     *     Guacamole session in GIF format. This Promise is guaranteed to
+     *     resolve successfully. If no recording is currently in progress, null
+     *     is returned.
+     */
+    ManagedClient.stopRecording = function stopRecording(managedClient) {
+
+        // Do nothing if a recording is not yet in progress
+        if (!managedClient.currentRecording)
+            return null;
+
+        // Reset stored recording
+        var recording = managedClient.currentRecording;
+        managedClient.currentRecording = null;
+
+        // Stop recording
+        return sessionRecordingService.stopRecording(recording);
 
     };
 
