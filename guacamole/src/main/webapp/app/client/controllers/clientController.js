@@ -731,4 +731,41 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
     });
 
+    /**
+     * STUB: Begins recording the currently-connected client, if any. This
+     * function exists for the sake of testing the new session recording
+     * functionality while there continues to exist no recording UI.
+     */
+    window._guacStartRecording = function startRecording() {
+
+        // Start recording if client is available
+        if ($scope.client) {
+            console.log('Starting recording...');
+            ManagedClient.startRecording($scope.client);
+        }
+
+    };
+
+    /**
+     * STUB: Ends the in-progress recording of the currently-connected client,
+     * if any. This function exists for the sake of testing the new session
+     * recording functionality while there continues to exist no recording UI.
+     */
+    window._guacStopRecording = function stopRecording() {
+
+        // Stop recording if client is available
+        if ($scope.client) {
+
+            console.log('Recording stopped. Starting render...');
+
+            // Stop recording
+            ManagedClient.stopRecording($scope.client)
+            .then(function recordingRendered(blob) {
+                console.log('Render complete: %s', URL.createObjectURL(blob));
+            });
+
+        }
+
+    };
+
 }]);
