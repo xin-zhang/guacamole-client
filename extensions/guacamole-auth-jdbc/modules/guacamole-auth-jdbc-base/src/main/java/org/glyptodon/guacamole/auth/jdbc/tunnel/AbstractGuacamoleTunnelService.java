@@ -58,6 +58,8 @@ import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
 import org.glyptodon.guacamole.token.StandardTokens;
 import org.glyptodon.guacamole.token.TokenFilter;
 import org.mybatis.guice.transactional.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -68,6 +70,11 @@ import org.mybatis.guice.transactional.Transactional;
  * @author Michael Jumper
  */
 public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelService {
+
+    /**
+     * Logger for this class.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(AbstractGuacamoleTunnelService.class);
 
     /**
      * The environment of the Guacamole server.
@@ -230,6 +237,15 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
 
         // Filter the configuration
         tokenFilter.filterValues(config.getParameters());
+
+        // Use connection ID of any existing active connection
+        for (ActiveConnectionRecord record : activeTunnels.values()) {
+            if (record.getConnectionIdentifier().equals(connection.getIdentifier())) {
+                logger.debug("Joining existing connection \"{}\".", record.getConnectionID());
+                config.setConnectionID(record.getConnectionID());
+                break;
+            }
+        }
 
         return config;
         
@@ -397,7 +413,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
         try {
 
             // Obtain socket which will automatically run the cleanup task
-            GuacamoleSocket socket = new ConfiguredGuacamoleSocket(
+            ConfiguredGuacamoleSocket socket = new ConfiguredGuacamoleSocket(
                 getUnconfiguredGuacamoleSocket(cleanupTask),
                 getGuacamoleConfiguration(activeConnection.getUser(), connection),
                 info

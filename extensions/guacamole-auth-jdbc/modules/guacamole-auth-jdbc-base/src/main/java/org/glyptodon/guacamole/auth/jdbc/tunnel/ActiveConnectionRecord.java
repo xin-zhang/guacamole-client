@@ -31,6 +31,7 @@ import org.glyptodon.guacamole.net.AbstractGuacamoleTunnel;
 import org.glyptodon.guacamole.net.GuacamoleSocket;
 import org.glyptodon.guacamole.net.GuacamoleTunnel;
 import org.glyptodon.guacamole.net.auth.ConnectionRecord;
+import org.glyptodon.guacamole.protocol.ConfiguredGuacamoleSocket;
 
 
 /**
@@ -75,7 +76,14 @@ public class ActiveConnectionRecord implements ConnectionRecord {
      * connection record.
      */
     private GuacamoleTunnel tunnel;
-    
+
+    /**
+     * The connection ID of the connection as determined by guacd, not to be
+     * confused with the connection identifier determined by the database. This
+     * is the ID that must be supplied to guacd if joining this connection.
+     */
+    private String connectionID;
+
     /**
      * Creates a new connection record associated with the given user,
      * connection, and balancing connection group. The given balancing
@@ -228,7 +236,7 @@ public class ActiveConnectionRecord implements ConnectionRecord {
      * @return
      *     The newly-created tunnel associated with this connection record.
      */
-    public GuacamoleTunnel assignGuacamoleTunnel(final GuacamoleSocket socket) {
+    public GuacamoleTunnel assignGuacamoleTunnel(final ConfiguredGuacamoleSocket socket) {
 
         // Create tunnel with given socket
         this.tunnel = new AbstractGuacamoleTunnel() {
@@ -245,6 +253,9 @@ public class ActiveConnectionRecord implements ConnectionRecord {
 
         };
 
+        // Store connection ID
+        this.connectionID = socket.getConnectionID();
+
         // Return newly-created tunnel
         return this.tunnel;
         
@@ -260,6 +271,19 @@ public class ActiveConnectionRecord implements ConnectionRecord {
      */
     public UUID getUUID() {
         return uuid;
+    }
+
+    /**
+     * Returns the connection ID of the in-progress connection as determined by
+     * guacd, not to be confused with the connection identifier determined by
+     * the database. This is the ID that must be supplied to guacd if joining
+     * this connection.
+     *
+     * @return
+     *     The ID of the in-progress connection, as determined by guacd.
+     */
+    public String getConnectionID() {
+        return connectionID;
     }
     
 }
