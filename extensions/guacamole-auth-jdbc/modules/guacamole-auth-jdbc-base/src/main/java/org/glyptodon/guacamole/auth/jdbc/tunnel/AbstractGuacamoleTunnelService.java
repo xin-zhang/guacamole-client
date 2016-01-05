@@ -240,11 +240,19 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
 
         // Use connection ID of any existing active connection
         for (ActiveConnectionRecord record : activeTunnels.values()) {
+
+            // Do not check tunnels that have not yet been established
+            String connectionID = record.getConnectionID();
+            if (connectionID == null)
+                continue;
+
+            // If connection already established, join that instead
             if (record.getConnectionIdentifier().equals(connection.getIdentifier())) {
-                logger.debug("Joining existing connection \"{}\".", record.getConnectionID());
-                config.setConnectionID(record.getConnectionID());
+                logger.debug("Joining existing connection \"{}\".", connectionID);
+                config.setConnectionID(connectionID);
                 break;
             }
+
         }
 
         return config;
