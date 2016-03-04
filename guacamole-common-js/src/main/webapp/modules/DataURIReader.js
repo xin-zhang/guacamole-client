@@ -48,21 +48,30 @@ Guacamole.DataURIReader = function(stream, mimetype) {
      */
     var uri = 'data:' + mimetype + ';base64,';
 
+    /**
+     * All received and decoded bytes as a binary string, where each codepoint
+     * within the string is the value of the decoded byte at that position.
+     *
+     * @private
+     * @type {String}
+     */
+    var buffer = '';
+
     // Receive blobs as array buffers
     stream.onblob = function dataURIReaderBlob(data) {
-
-        // Currently assuming data will ALWAYS be safe to simply append. This
-        // will not be true if the received base64 data encodes a number of
-        // bytes that isn't a multiple of three (as base64 expands in a ratio
-        // of exactly 3:4).
-        uri += data;
-
+        buffer += Guacamole.Binary.decode(data);
     };
 
-    // Simply call onend when end received
+    // Finalize URI when stream ends
     stream.onend = function dataURIReaderEnd() {
+
+        // Add base64 data to URI
+        uri += window.btoa(buffer);
+
+        // Invoke provided onend handler, if defined
         if (guac_reader.onend)
             guac_reader.onend();
+
     };
 
     /**

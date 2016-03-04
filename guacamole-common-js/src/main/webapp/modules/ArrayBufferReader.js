@@ -43,7 +43,7 @@ Guacamole.ArrayBufferReader = function(stream) {
     stream.onblob = function(data) {
 
         // Convert to ArrayBuffer
-        var binary = window.atob(data);
+        var binary = Guacamole.Binary.decode(data);
         var arrayBuffer = new ArrayBuffer(binary.length);
         var bufferView = new Uint8Array(arrayBuffer);
 
