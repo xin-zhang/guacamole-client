@@ -32,6 +32,61 @@ var Guacamole = Guacamole || {};
 Guacamole.Binary = {
 
     /**
+     * Encodes the given binary string as a 7-bit string, where each codepoint
+     * in the input is identical in value to the byte at that position,
+     * analogous to the result of invoking window.btoa() on a binary string.
+     * All bits of the binary input data are written to only the low 7 bits of
+     * each byte in the encoded output.
+     *
+     * @param {String} str
+     *     The binary string shich should be encoded.
+     *
+     * @returns {String}
+     *     The 7-bit encoded string which results from encoding the given
+     *     binary string.
+     */
+    encode: function encode(str) {
+
+        // Final output buffer (characters)
+        var outputChars = '';
+        var outputChar;
+
+        // Rolling buffer (bits, will contain no more than 15 bits at any time)
+        var outputBitBuffer = 0;
+        var outputBitLength = 0;
+
+        // Add each byte within the buffer as a new 7-bit quantity + extra bits
+        for (var i = 0; i < str.length; i++) {
+
+            // Shift on new byte to bit buffer
+            outputBitBuffer = (outputBitBuffer << 8) | str.charCodeAt(i);
+            outputBitLength += 8;
+
+            // Shift off 7 bits until more bits are needed
+            while (outputBitLength >= 7) {
+
+                // Pull leftmost seven bits
+                outputBitLength -= 7;
+                outputChar = (outputBitBuffer >> outputBitLength) & 0x7F;
+
+                // Add output buffer as one char
+                outputChars += String.fromCharCode(outputChar);
+
+            }
+
+        }
+
+        // If any bits remain, append as the final character
+        if (outputBitLength !== 0) {
+            outputChar = (outputBitBuffer << (7 - outputBitLength)) & 0x7F;
+            outputChars += String.fromCharCode(outputChar);
+        }
+
+        return outputChars;
+
+    },
+
+    /**
      * Decodes the given string as a binary string, where each codepoint in the
      * result is identical in value to the byte at that position, analogous to
      * the result of invoking window.atob() on a base64 string. All bits of the
