@@ -194,7 +194,7 @@ Guacamole.Binary = {
      */
     decodeAsArrayBuffer: function decodeAsArrayBuffer(str) {
 
-        var outputBytes = new Uint8Array(str.length);
+        var outputBytes = new Uint8Array(str.length * 7 / 8);
         var outputLength = 0;
 
         var bitBuffer = 0;
@@ -215,6 +215,7 @@ Guacamole.Binary = {
             }
 
         }
+
 
         return outputBytes;
 
