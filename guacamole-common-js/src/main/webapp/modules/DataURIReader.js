@@ -59,7 +59,7 @@ Guacamole.DataURIReader = function(stream, mimetype) {
 
     // Receive blobs as array buffers
     stream.onblob = function dataURIReaderBlob(data) {
-        buffer += Guacamole.Binary.decode(data);
+        buffer += Guacamole.Binary.decodeAsString(data);
     };
 
     // Finalize URI when stream ends

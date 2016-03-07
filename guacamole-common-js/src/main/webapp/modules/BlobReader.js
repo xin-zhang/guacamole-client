@@ -73,12 +73,7 @@ Guacamole.BlobReader = function(stream, mimetype) {
     stream.onblob = function(data) {
 
         // Convert to ArrayBuffer
-        var binary = Guacamole.Binary.decode(data);
-        var arrayBuffer = new ArrayBuffer(binary.length);
-        var bufferView = new Uint8Array(arrayBuffer);
-
-        for (var i=0; i<binary.length; i++)
-            bufferView[i] = binary.charCodeAt(i);
+        var arrayBuffer = Guacamole.Binary.decodeAsArrayBuffer(data);
 
         blob_builder.append(arrayBuffer);
         length += arrayBuffer.byteLength;

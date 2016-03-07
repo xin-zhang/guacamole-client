@@ -45,7 +45,7 @@ Guacamole.Binary = {
      *     The 7-bit encoded string which results from encoding the given
      *     binary string.
      */
-    encode: function encode(str) {
+    encodeAsString: function encodeAsString(str) {
 
         // Final output buffer (characters)
         var outputChars = '';
@@ -99,7 +99,7 @@ Guacamole.Binary = {
      * @returns {String}
      *     The binary string resulting from decoding the given input string.
      */
-    decode: function decode(str) {
+    decodeAsString: function decodeAsString(str) {
 
         var outputBytes = '';
 
@@ -117,6 +117,47 @@ Guacamole.Binary = {
             if (bitLength >= 8) {
                 var value = (bitBuffer >> (bitLength - 8)) & 0xFF;
                 outputBytes += String.fromCharCode(value);
+                bitLength -= 8;
+            }
+
+        }
+
+        return outputBytes;
+
+    },
+
+    /**
+     * Decodes the given string as a binary string, where each codepoint in the
+     * result is identical in value to the byte at that position, analogous to
+     * the result of invoking window.atob() on a base64 string. All bits of the
+     * underlying binary data are read from the low 7 bits of each byte in the
+     * encoded input.
+     *
+     * @param {String} str
+     *     The encoded string shich should be decoded.
+     *
+     * @returns {Uint8Array}
+     *     The binary string resulting from decoding the given input string.
+     */
+    decodeAsArrayBuffer: function decodeAsArrayBuffer(str) {
+
+        var outputBytes = new Uint8Array(str.length);
+        var outputLength = 0;
+
+        var bitBuffer = 0;
+        var bitLength = 0;
+
+        // Read and append every 7-bit value in the given string
+        for (var i = 0; i < str.length; i++) {
+
+            // Shift on 7-bits for every value in the string
+            bitBuffer = (bitBuffer << 7) | str.charCodeAt(i);
+            bitLength += 7;
+
+            // Write one byte for every 8 bits
+            if (bitLength >= 8) {
+                var value = (bitBuffer >> (bitLength - 8)) & 0xFF;
+                outputBytes[outputLength++] = value;
                 bitLength -= 8;
             }
 
