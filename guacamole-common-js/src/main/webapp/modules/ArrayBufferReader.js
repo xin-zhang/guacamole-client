@@ -43,7 +43,7 @@ Guacamole.ArrayBufferReader = function(stream) {
     stream.onblob = function(data) {
 
         // Convert to ArrayBuffer
-        var arrayBuffer = Guacamole.Binary.decodeAsArrayBuffer(data);
+        var arrayBuffer = Guacamole.Binary.decodeAsArrayBuffer(data).buffer;
 
         // Call handler, if present
         if (guac_reader.ondata)
