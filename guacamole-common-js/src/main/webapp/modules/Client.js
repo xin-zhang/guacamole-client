@@ -968,12 +968,12 @@ Guacamole.Client = function(tunnel) {
 
             // Create stream
             var stream = streams[stream_index] = new Guacamole.InputStream(guac_client, stream_index);
-            var reader = new Guacamole.DataURIReader(stream, mimetype);
+            var reader = new Guacamole.BlobReader(stream, mimetype);
 
             // Draw image when stream is complete
             reader.onend = function drawImageBlob() {
                 display.setChannelMask(layer, channelMask);
-                display.draw(layer, x, y, reader.getURI());
+                display.drawBlob(layer, x, y, reader.getBlob());
             };
 
         },
