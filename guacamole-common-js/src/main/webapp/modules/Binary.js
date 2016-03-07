@@ -127,17 +127,70 @@ Guacamole.Binary = {
     },
 
     /**
-     * Decodes the given string as a binary string, where each codepoint in the
-     * result is identical in value to the byte at that position, analogous to
-     * the result of invoking window.atob() on a base64 string. All bits of the
-     * underlying binary data are read from the low 7 bits of each byte in the
-     * encoded input.
+     * Decodes the given 7-bit string as base64. The result of this operation
+     * is identical to invoking window.btoa() on the result of decoding the
+     * given string with Guacamole.Binary.decodeAsString(), but more efficient.
+     *
+     * @param {String} str
+     *     The encoded string shich should be decoded.
+     *
+     * @returns {String}
+     *     The base64-encoded string resulting from decoding the given input
+     *     string.
+     */
+    decodeAsBase64: function decodeAsBase64(str) {
+
+        var paddingBits = (str.length * 7) % 8;
+        var base64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+        var outputBytes = '';
+
+        var bitBuffer = 0;
+        var bitLength = 0;
+
+        // Read and append every 7-bit value in the given string
+        for (var i = 0; i < str.length; i++) {
+
+            // Shift on 7-bits for every value in the string
+            bitBuffer = (bitBuffer << 7) | str.charCodeAt(i);
+            bitLength += 7;
+
+            // Write one character for every 6 bits (avoiding the padding)
+            while (bitLength >= 6 + paddingBits) {
+                var value = (bitBuffer >> (bitLength - 6)) & 0x3F;
+                outputBytes += base64.charAt(value);
+                bitLength -= 6;
+            }
+
+        }
+
+        // Shift off the padding from the 7-bit encoding process
+        bitBuffer >>= paddingBits;
+        bitLength -= paddingBits;
+
+        // If any bits remain, append as the final character
+        if (bitLength !== 0) {
+            value = (bitBuffer << (6 - bitLength)) & 0x3F;
+            outputBytes += base64.charAt(value);
+        }
+
+        // Pad up to nearest multiple of 4
+        while (outputBytes.length % 4 !== 0)
+            outputBytes += '=';
+
+        return outputBytes;
+
+    },
+
+    /**
+     * Decodes the given string as a new ArrayBuffer similar. All bits of the
+     * binary data stored within this ArrayBuffer are read from the low 7 bits
+     * of each byte in the encoded input.
      *
      * @param {String} str
      *     The encoded string shich should be decoded.
      *
      * @returns {Uint8Array}
-     *     The binary string resulting from decoding the given input string.
+     *     The ArrayBuffer resulting from decoding the given input string.
      */
     decodeAsArrayBuffer: function decodeAsArrayBuffer(str) {
 
