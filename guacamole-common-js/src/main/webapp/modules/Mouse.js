@@ -43,7 +43,7 @@ Guacamole.Mouse = function(element) {
      * The number of mousemove events to require before re-enabling mouse
      * event handling after receiving a touch event.
      */
-    this.touchMouseThreshold = 3;
+    this.touchMouseThreshold = 0;
 
     /**
      * The minimum amount of pixels scrolled required for a single scroll button

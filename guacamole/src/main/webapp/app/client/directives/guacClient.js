@@ -250,7 +250,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
                     return;
 
                 // Ensure software cursor is shown
-                display.showCursor(true);
+                display.showCursor(false);
 
                 // Send mouse state, ensure cursor is visible
                 scrollToMouse(mouseState);

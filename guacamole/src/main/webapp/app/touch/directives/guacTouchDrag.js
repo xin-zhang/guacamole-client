@@ -23,6 +23,7 @@
 /**
  * A directive which allows handling of drag gestures on a particular element.
  */
+
 angular.module('touch').directive('guacTouchDrag', [function guacTouchDrag() {
 
     return {

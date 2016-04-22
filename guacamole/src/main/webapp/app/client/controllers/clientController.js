@@ -47,7 +47,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      *
      * @type Number
      */
-    var MENU_DRAG_DELTA = 64;
+    var MENU_DRAG_DELTA = 64000000;
 
     /**
      * The maximum X location of the start of a drag gesture for that gesture
@@ -55,7 +55,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      *
      * @type Number
      */
-    var MENU_DRAG_MARGIN = 64;
+    var MENU_DRAG_MARGIN = -2;
 
     /**
      * When showing or hiding the menu via a drag gesture, the maximum number
