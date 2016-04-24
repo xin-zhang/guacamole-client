@@ -990,7 +990,26 @@ Guacamole.Mouse.Touchscreen = function(element) {
         gesture_in_progress = false;
     }
 
+    function ZX_toggleFullScreen() {
+        var doc = window.document;
+        var docEl = doc.documentElement;
+
+        var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
+        var cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
+
+        if(!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
+            requestFullScreen.call(docEl);
+        }
+        else {
+            cancelFullScreen.call(doc);
+        }
+    }
+
     element.addEventListener("touchend", function(e) {
+
+        if (e.touches.length >= 3) {
+            ZX_toggleFullScreen();
+        }
 
         // Do not handle if no gesture
         if (!gesture_in_progress)
@@ -1008,7 +1027,10 @@ Guacamole.Mouse.Touchscreen = function(element) {
         // Always release mouse button if pressed
         release_button("left");
 
+        end_gesture();
+
         // If finger hasn't moved enough to cancel the click
+        /* 
         if (!finger_moved(e)) {
 
             e.preventDefault();
@@ -1029,6 +1051,7 @@ Guacamole.Mouse.Touchscreen = function(element) {
             }
 
         } // end if finger not moved
+        */
 
     }, false);
 
@@ -1047,6 +1070,12 @@ Guacamole.Mouse.Touchscreen = function(element) {
 
         // Keep button pressed if tap after left click
         window.clearTimeout(click_release_timeout);
+
+        var touch = e.changedTouches[0];
+        move_mouse(touch.clientX, touch.clientY);
+
+        // Press button left
+        press_button("left");
 
         // Click right button if this turns into a long-press
         /* ignore right button
