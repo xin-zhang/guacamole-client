@@ -1049,12 +1049,13 @@ Guacamole.Mouse.Touchscreen = function(element) {
         window.clearTimeout(click_release_timeout);
 
         // Click right button if this turns into a long-press
+        /* ignore right button
         long_press_timeout = window.setTimeout(function() {
             var touch = e.touches[0];
             move_mouse(touch.clientX, touch.clientY);
             click_button("right");
             end_gesture();
-        }, guac_touchscreen.longPressThreshold);
+        }, guac_touchscreen.longPressThreshold);*/
 
     }, false);
 
